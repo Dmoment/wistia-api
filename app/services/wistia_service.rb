@@ -9,4 +9,9 @@ class WistiaService
   def fetch_videos
     self.class.get('/medias.json', @options)
   end
+
+  def fetch_video_stats(video_hash)
+    response = self.class.get("/stats/medias/#{video_hash}.json", @options)
+    response.parsed_response if response.success?
+  end
 end
