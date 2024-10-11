@@ -21,8 +21,9 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      resources :videos, only: [:index, :update]
-      resources :tags, only: [:index, :create]
+      resources :videos, only: [:index, :update] do
+        resources :video_tags, only: [:create]
+      end
     end
   end
 end

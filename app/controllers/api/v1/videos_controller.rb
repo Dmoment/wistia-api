@@ -2,8 +2,8 @@ module Api
   module V1
     class VideosController < ApplicationController
       def index
-        @videos = Video.where(visible: true)
-        render json: @videos
+        @videos = Video.includes(:tags).where(visible: true)
+        render json: @videos.to_json(include: :tags)
       end
 
       def update
