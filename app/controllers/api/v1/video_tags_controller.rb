@@ -1,16 +1,40 @@
 module Api
   module V1
     class VideoTagsController < ApplicationController
-      def create
-        @video = Video.find_by(wistia_hash: params[:video_id])
-        @tag = Tag.find_or_create_by(name: params[:tag][:name])
+      before_action :find_video, only: [:create]
 
-        if @video && @tag
-          @video.tags << @tag unless @video.tags.include?(@tag)
-          render json: @tag, status: :created
+      def create
+        return render_error('Video not found', :not_found) unless @video
+
+        @tag = Tag.find_or_create_by(tag_params)
+
+        if @tag.persisted?
+          attach_tag_to_video(@video, @tag)
         else
-          render json: { error: 'Video or Tag not found' }, status: :unprocessable_entity
+          render_error('Failed to create or find tag', :unprocessable_entity)
         end
+      end
+
+      private
+
+      def find_video
+        @video = Video.find_by(wistia_hash: params[:video_id])
+      end
+
+      def tag_params
+        params.require(:tag).permit(:name)
+      end
+
+      def attach_tag_to_video(video, tag)
+        if video.tags.exclude?(tag)
+          video.tags << tag
+        end
+
+        render json: tag, status: :created
+      end
+
+      def render_error(message, status)
+        render json: { error: message }, status: status
       end
     end
   end
