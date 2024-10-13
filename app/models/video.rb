@@ -14,7 +14,7 @@ class Video < ApplicationRecord
   end
 
   def self.sync_video_with_wistia(wistia_service, wistia_video)
-    video = find_or_initialize_by(wistia_hash: wistia_video['hashed_id'])
+    video = find_or_create_by(wistia_hash: wistia_video['hashed_id'])
     play_count_data = wistia_service.fetch_video_stats(wistia_video['hashed_id'])
     play_count = play_count_data['play_count']
 
@@ -25,6 +25,7 @@ class Video < ApplicationRecord
       visible: true
     )
 
-    video.save if video.changed? # Only save if changes were made
+    # Only save if changes were made
+    video.save if video.changed?
   end
 end

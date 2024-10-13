@@ -8,7 +8,7 @@ class WistiaService
 
   def fetch_videos
     response = self.class.get('/medias.json', @options)
-    return response.parsed_response if response.success?
+    return JSON.parse(response.body) if response.success?
 
     log_error(response)
     []
@@ -16,7 +16,7 @@ class WistiaService
 
   def fetch_video_stats(video_hash)
     response = self.class.get("/stats/medias/#{video_hash}.json", @options)
-    return response.parsed_response if response.success?
+    return JSON.parse(response.body) if response.success?
 
     log_error(response)
     {}
