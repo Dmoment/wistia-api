@@ -5,8 +5,9 @@ module Api
 
       # GET /api/v1/videos
       def index
-        videos = Video.includes(:tags).where(visible: true)
-        render json: videos.to_json(include: :tags)
+        @videos = Video.includes(:tags).where(visible: true)
+
+        render :index, status: :ok, formats: :json, locals: { videos: @videos }
       end
 
       # PATCH/PUT /api/v1/videos/:id
